@@ -3,6 +3,7 @@ const AwsCli = require('aws-cli-js-jt')
 const amqp = require('amqplib')
 const chalk = require('chalk')
 const config = require('./config')
+const fs = require('fs')
 
 let rabbitChannel
 
@@ -107,6 +108,9 @@ function checkMessage (msg) {
 }
 
 function upload (args) {
+  if (!fs.existsSync(args.src)) {
+    throw new Error(`File not found: ${args.src}`)
+  }
   switch (args.cloud) {
     case 's3':
       return uploadS3(args)
