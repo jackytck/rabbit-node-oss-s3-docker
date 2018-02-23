@@ -1,0 +1,16 @@
+{
+  "name": "rabbit-node-oss-s3-docker",
+  "version": "0.0.1",
+  "author": "Jacky Tang",
+  "license": "MIT",
+  "scripts": {
+    "start": "node -r dotenv/config src/index.js"
+  },
+  "dependencies": {
+    "ali-oss-extra": "^0.0.24",
+    "amqplib": "^0.5.2",
+    "aws-cli-js-jt": "^0.0.2",
+    "chalk": "^2.3.1",
+    "dotenv": "^5.0.0"
+  }
+}
