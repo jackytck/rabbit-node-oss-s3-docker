@@ -204,19 +204,24 @@ function syncDirUp (args) {
   }
 }
 
-function syncDirUpS3 ({ bucket, region, src, dst, remove }) {
+function syncDirUpS3 ({ bucket, region, src, dst, remove, exclude }) {
   let sync = `s3 sync ${src} s3://${bucket}/${dst} --no-follow-symlinks`
   if (remove) {
     sync += ' --delete'
+  }
+  if (exclude && exclude.length) {
+    const ignore = exclude.map(x => `--exclude "${x}/*"`).join(' ')
+    sync += ` ${ignore}`
   }
   console.log(sync)
   return awsCli.command(sync)
 }
 
-function syncDirUpOSS ({ bucket, region, src, dst, remove }) {
+function syncDirUpOSS ({ bucket, region, src, dst, remove, exclude }) {
   const client = initOSSClient({ bucket, region })
   const opts = {
     remove,
+    ignoreList: exclude,
     verbose: true
   }
   return client.syncDir(src, dst, opts)
