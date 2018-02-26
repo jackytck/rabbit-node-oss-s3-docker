@@ -94,6 +94,9 @@ async function work (message) {
         case 'upload':
           await upload(msg.args)
           break
+        case 'download':
+          await download(msg.args)
+          break
         case 'remove':
           await remove(msg.args)
           break
@@ -143,6 +146,25 @@ function uploadOSS ({ bucket, region, src, dst }) {
     'Cache-Control': 'max-age=0'
   }
   return client.put(dst, src, { headers, timeout: '120s' })
+}
+
+function download (args) {
+  switch (args.cloud) {
+    case 's3':
+      return downloadS3(args)
+    case 'oss':
+      return downloadOSS(args)
+  }
+}
+
+function downloadS3 ({ bucket, region, src, dst }) {
+  const cp = `s3 cp s3://${bucket}/${src} ${dst} --region ${region}`
+  return awsCli.command(cp)
+}
+
+function downloadOSS ({ bucket, region, src, dst }) {
+  const client = initOSSClient({ bucket, region })
+  return client.get(src, dst)
 }
 
 function remove (args) {
