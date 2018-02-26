@@ -43,6 +43,19 @@ const awsCli = new AwsCli({
 })
 
 /**
+ * Init OSS client.
+ */
+const initOSSClient = ({ bucket, region, timeout = '120s' }) => {
+  return new AliOSS({
+    bucket,
+    region,
+    timeout,
+    accessKeyId: config.oss.access,
+    accessKeySecret: config.oss.secret,
+  })
+}
+
+/**
  * Main work.
  * {
  *   ops: 'upload',
@@ -125,13 +138,7 @@ function uploadS3 ({ bucket, region, src, dst }) {
 }
 
 function uploadOSS ({ bucket, region, src, dst }) {
-  const client = new AliOSS({
-    bucket,
-    region,
-    accessKeyId: config.oss.access,
-    accessKeySecret: config.oss.secret,
-    timeout: '120s'
-  })
+  const client = initOSSClient({ bucket, region })
   const headers = {
     'Cache-Control': 'max-age=0'
   }
