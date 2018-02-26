@@ -100,6 +100,9 @@ async function work (message) {
         case 'remove':
           await remove(msg.args)
           break
+        case 'sync-dir-up':
+          await syncDirUp(msg.args)
+          break
       }
       await sendCallback(msg)
       console.log('Done')
@@ -190,6 +193,33 @@ function removeOSS ({ bucket, region, src, dst }) {
     timeout: '120s'
   })
   return client.delete(dst, { timeout: '120s' })
+}
+
+function syncDirUp (args) {
+  switch (args.cloud) {
+    case 's3':
+      return syncDirUpS3(args)
+    case 'oss':
+      return syncDirUpOSS(args)
+  }
+}
+
+function syncDirUpS3 ({ bucket, region, src, dst, remove }) {
+  let sync = `s3 sync ${src} s3://${bucket}/${dst} --no-follow-symlinks`
+  if (remove) {
+    sync += ' --delete'
+  }
+  console.log(sync)
+  return awsCli.command(sync)
+}
+
+function syncDirUpOSS ({ bucket, region, src, dst, remove }) {
+  const client = initOSSClient({ bucket, region })
+  const opts = {
+    remove,
+    verbose: true
+  }
+  return client.syncDir(src, dst, opts)
 }
 
 /**
