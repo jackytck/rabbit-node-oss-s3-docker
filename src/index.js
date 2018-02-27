@@ -4,6 +4,8 @@ const amqp = require('amqplib')
 const chalk = require('chalk')
 const config = require('./config')
 const fs = require('fs')
+const lodash = require('lodash')
+const moment = require('moment')
 
 let rabbitChannel
 
@@ -17,7 +19,9 @@ async function connectRabbit () {
       password,
       host,
       port,
-      queue
+      queue,
+      ping,
+      pong
     } = config.rabbit
 
     const uri = `amqp://${user}:${password}@${host}:${port}`
@@ -28,7 +32,39 @@ async function connectRabbit () {
     rabbitChannel.prefetch(+config.concurrency)
     rabbitChannel.consume(queue, work)
 
+    // for heartbeat ping pong
+    await rabbitChannel.assertExchange(ping, 'fanout', { durable: true })
+    const tmpQueue = await rabbitChannel.assertQueue('', { exclusive: true })
+    await rabbitChannel.bindQueue(tmpQueue.queue, ping, '')
+    rabbitChannel.consume(tmpQueue.queue, handlePing, { noAck: true })
+    await rabbitChannel.assertQueue(pong, { durable: true })
+
     console.log(chalk.inverse(`Connected ${host}:${port}`))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+/**
+ * Handle ping message from heartbeater.
+ */
+async function handlePing (message) {
+  const msg = message.content.toString()
+  try {
+    const mach = JSON.parse(msg)
+    mach.name = config.host.name
+    mach.nickname = config.host.name
+    mach.type = config.host.type
+    mach.pong = moment().format('YYYY-MM-DD hh:mm:ss.SSSS A')
+    const pong = lodash.pick(mach, [
+      'name',
+      'nickname',
+      'type',
+      'ping',
+      'pong',
+      'extra'
+    ])
+    await rabbitChannel.sendToQueue(config.rabbit.pong, new Buffer(JSON.stringify(pong)))
   } catch (err) {
     console.error(err)
   }
