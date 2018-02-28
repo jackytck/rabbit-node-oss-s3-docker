@@ -1,6 +1,7 @@
 const {
   AWS_ACCESS,
   AWS_SECRET,
+  CONCURRENCY,
   HOST_NAME,
   HOST_TYPE,
   RABBIT_HOST,
@@ -35,6 +36,7 @@ const config = {
   oss: {
     access: OSS_ACCESS,
     secret: OSS_SECRET
-  }
+  },
+  concurrency: CONCURRENCY
 }
 module.exports = config
