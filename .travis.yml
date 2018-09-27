@@ -11,7 +11,8 @@ script:
 after_success:
   - |
     if [[ "$TRAVIS_BRANCH" == "master" ]]; then
+      docker version
+      docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       docker build -t jackytck/rabbit-node-oss-s3-docker:v0.0.2 .
-      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       docker push jackytck/rabbit-node-oss-s3-docker:v0.0.2
     fi
