@@ -139,6 +139,9 @@ async function work (message) {
         case 'sync-dir-up':
           await syncDirUp(msg.args)
           break
+        case 'sync-dir-down':
+          await syncDirDown(msg.args)
+          break
       }
       await sendCallback(msg)
       console.log('Done')
@@ -261,6 +264,36 @@ function syncDirUpOSS ({ bucket, region, src, dst, remove, exclude }) {
     verbose: true
   }
   return client.syncDir(src, dst, opts)
+}
+
+function syncDirDown (args) {
+  switch (args.cloud) {
+    case 's3':
+      return syncDirDownS3(args)
+    case 'oss':
+      return syncDirDownOSS(args)
+  }
+}
+
+function syncDirDownS3 ({ bucket, region, src, dst, remove, verbose }) {
+  let sync = `s3 sync s3://${bucket}/${src} ${dst}`
+  if (remove) {
+    sync += ' --delete'
+  }
+  if (!verbose) {
+    sync += ' --only-show-errors'
+  }
+  console.log(sync)
+  return awsCli.command(sync)
+}
+
+function syncDirDownOSS ({ bucket, region, src, dst, remove, verbose }) {
+  const client = initOSSClient({ bucket, region })
+  const opts = {
+    remove,
+    verbose
+  }
+  return client.syncDirDown(src, dst, opts)
 }
 
 /**
