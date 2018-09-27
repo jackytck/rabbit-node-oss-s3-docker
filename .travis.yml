@@ -11,7 +11,8 @@ install:
 script:
   - echo "no tests!"
 
-after_success:
-  - docker --version
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-  - docker push jackytck/rabbit-node-oss-s3-docker:v0.0.2;
+deploy:
+  provider: script
+  script: bash docker_push
+  on:
+    branch: master
