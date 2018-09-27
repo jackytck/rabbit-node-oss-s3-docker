@@ -100,7 +100,7 @@ docker run --env-file cloud-worker.env -v /tmp:/tmp --name cloud-file-worker -d 
 }
 ```
 
-### Sync entire directory
+### Sync entire local directory to cloud
 ```json
 {
   "ops": "sync-dir-up",
@@ -113,5 +113,27 @@ docker run --env-file cloud-worker.env -v /tmp:/tmp --name cloud-file-worker -d 
     "remove": true,
     "exclude": ["pages", "logos"]
   }
+}
+```
+
+### Sync entire cloud path to local directory
+```json
+{
+  "ops": "sync-dir-down",
+  "args": {
+    "cloud": "oss",
+    "bucket": "my-bucket",
+    "region": "oss-cn-shenzhen",
+    "src": "test-big",
+    "dst": "/tmp/data-1G",
+    "remove": true,
+    "verbose": true
+  },
+  "done": [
+    {
+      "queue": "sync-down",
+      "msg": "test-big"
+    }
+  ]
 }
 ```
