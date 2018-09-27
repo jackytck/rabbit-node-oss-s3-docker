@@ -1,4 +1,0 @@
-#!/bin/bash
-docker build -t $DOCKER_USERNAME/rabbit-node-oss-s3-docker:v0.0.2
-docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-docker push $DOCKER_USERNAME/rabbit-node-oss-s3-docker:v0.0.2
