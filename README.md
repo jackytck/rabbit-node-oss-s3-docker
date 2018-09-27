@@ -1,3 +1,8 @@
+[![build status][travis-image]][travis-url]
+
+[travis-image]: https://travis-ci.org/jackytck/rabbit-node-oss-s3-docker.svg?branch=master
+[travis-url]: https://travis-ci.org/jackytck/rabbit-node-oss-s3-docker
+
 For uploading and removing files from S3 or OSS via rabbit.
 
 ### Sample cloud-worker.env
