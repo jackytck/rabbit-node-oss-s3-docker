@@ -152,7 +152,7 @@ async function work (message) {
     console.error(err)
     await sendCallback(msg, 'error')
     if (msg.ops === 'sync-dir-down' && msg.args.cleanOnError) {
-      await fs.remove(msg.args.dst)
+      await fsp.remove(msg.args.dst)
     }
     console.log('Failed')
   }
