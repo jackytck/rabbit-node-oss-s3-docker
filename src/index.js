@@ -4,6 +4,7 @@ const amqp = require('amqplib')
 const chalk = require('chalk')
 const config = require('./config')
 const fs = require('fs')
+const fsp = require('fs-promise')
 const lodash = require('lodash')
 const moment = require('moment')
 
@@ -150,6 +151,9 @@ async function work (message) {
     // d. Unexpected error
     console.error(err)
     await sendCallback(msg, 'error')
+    if (msg.ops === 'sync-dir-down' && msg.args.cleanOnError) {
+      await fs.remove(msg.args.dst)
+    }
     console.log('Failed')
   }
   rabbitChannel.ack(message)
