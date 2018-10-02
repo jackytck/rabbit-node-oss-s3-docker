@@ -299,8 +299,8 @@ function syncDirDownOSS ({ bucket, region, src, dst, remove, retryCnt = 0, verbo
     verbose
   }
   // oss would throw Unknown Error if number of files are large, so retry
-  return retry(() => {
-    client.syncDirDown(src, dst, opts)
+  return retry(async () => {
+    await client.syncDirDown(src, dst, opts)
   }, {
     retries: retryCnt
   })
