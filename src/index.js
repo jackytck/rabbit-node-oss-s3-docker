@@ -7,6 +7,7 @@ const fs = require('fs')
 const fsp = require('fs-promise')
 const lodash = require('lodash')
 const moment = require('moment')
+const retry = require('async-retry')
 
 let rabbitChannel
 
@@ -291,13 +292,18 @@ function syncDirDownS3 ({ bucket, region, src, dst, remove, verbose }) {
   return awsCli.command(sync)
 }
 
-function syncDirDownOSS ({ bucket, region, src, dst, remove, verbose }) {
+function syncDirDownOSS ({ bucket, region, src, dst, remove, retryCnt = 0, verbose }) {
   const client = initOSSClient({ bucket, region })
   const opts = {
     remove,
     verbose
   }
-  return client.syncDirDown(src, dst, opts)
+  // oss would throw Unknown Error if number of files are large, so retry
+  return retry(() => {
+    client.syncDirDown(src, dst, opts)
+  }, {
+    retries: retryCnt
+  })
 }
 
 /**
