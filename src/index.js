@@ -298,11 +298,19 @@ function syncDirDownOSS ({ bucket, region, src, dst, remove, retryCnt = 0, verbo
     remove,
     verbose
   }
+
+  const onRetry = err => {
+    console.error(err)
+    console.log(`Retrying ${src}...`)
+  }
+
   // oss would throw Unknown Error if number of files are large, so retry
   return retry(async () => {
     await client.syncDirDown(src, dst, opts)
   }, {
-    retries: retryCnt
+    retries: retryCnt,
+    factor: 1,
+    onRetry
   })
 }
 
