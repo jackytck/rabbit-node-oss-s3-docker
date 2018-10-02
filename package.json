@@ -9,6 +9,7 @@
   "dependencies": {
     "ali-oss-extra": "^0.0.24",
     "amqplib": "^0.5.2",
+    "async-retry": "^1.2.3",
     "aws-cli-js-jt": "^0.0.2",
     "chalk": "^2.3.1",
     "dotenv": "^5.0.0",
