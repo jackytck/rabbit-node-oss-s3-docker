@@ -13,7 +13,7 @@
     "aws-cli-js-jt": "^0.0.3",
     "chalk": "^2.4.2",
     "dotenv": "^8.1.0",
-    "fs-promise": "^2.0.3",
+    "fs-extra": "^8.1.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0"
   }

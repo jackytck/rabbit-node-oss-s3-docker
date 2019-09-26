@@ -4,7 +4,7 @@ const amqp = require('amqplib')
 const chalk = require('chalk')
 const config = require('./config')
 const fs = require('fs')
-const fsp = require('fs-promise')
+const fse = require('fs-extra')
 const lodash = require('lodash')
 const moment = require('moment')
 const retry = require('async-retry')
@@ -144,6 +144,9 @@ async function work (message) {
         case 'sync-dir-down':
           await syncDirDown(msg.args)
           break
+        case 'copy':
+          await copy(msg.args)
+          break
       }
       await sendCallback(msg)
       console.log('Done')
@@ -153,7 +156,7 @@ async function work (message) {
     console.error(err)
     await sendCallback(msg, 'error')
     if (msg.ops === 'sync-dir-down' && msg.args.cleanOnError) {
-      await fsp.remove(msg.args.dst)
+      await fse.remove(msg.args.dst)
     }
     console.log('Failed')
   }
@@ -164,8 +167,15 @@ async function work (message) {
  * Check essential data fields.
  */
 function checkMessage (msg) {
-  if (msg.ops && msg.args && ['s3', 'oss'].includes(msg.args.cloud) && msg.args.bucket && msg.args.region) {
-    return true
+  if (msg.ops && msg.args) {
+    // s3 + oss
+    if (['s3', 'oss'].includes(msg.args.cloud) && msg.args.bucket && msg.args.region) {
+      return true
+    }
+    // local disk
+    if (msg.args.cloud === 'local' && msg.args.src && msg.args.dst) {
+      return true
+    }
   }
   return false
 }
@@ -312,6 +322,17 @@ function syncDirDownOSS ({ bucket, region, src, dst, remove, retryCnt = 0, verbo
     factor: 1,
     onRetry
   })
+}
+
+function copy (args) {
+  switch (args.cloud) {
+    case 'local':
+      return copyLocal(args)
+  }
+}
+
+function copyLocal (args) {
+  return fse.copy(args.src, args.dst)
 }
 
 /**
