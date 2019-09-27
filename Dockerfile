@@ -14,4 +14,6 @@ RUN yarn
 
 COPY src src
 
+ENV FORCE_COLOR 1
+
 CMD ["yarn", "start"]
