@@ -173,8 +173,13 @@ function checkMessage (msg) {
       return true
     }
     // local disk
-    if (msg.args.cloud === 'local' && msg.args.src && msg.args.dst) {
-      return true
+    if (msg.args.cloud === 'local') {
+      if (msg.ops === 'copy' && msg.args.src && msg.args.dst) {
+        return true
+      }
+      if (msg.ops === 'remove' && msg.args.dst) {
+        return true
+      }
     }
   }
   return false
@@ -230,6 +235,8 @@ function remove (args) {
       return removeS3(args)
     case 'oss':
       return removeOSS(args)
+    case 'local':
+      return removeLocal(args)
   }
 }
 
@@ -247,6 +254,10 @@ function removeOSS ({ bucket, region, src, dst }) {
     timeout: '120s'
   })
   return client.delete(dst, { timeout: '120s' })
+}
+
+function removeLocal ({ dst }) {
+  return fse.remove(dst)
 }
 
 function syncDirUp (args) {
