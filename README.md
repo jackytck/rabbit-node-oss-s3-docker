@@ -105,6 +105,17 @@ docker run --env-file cloud-worker.env -v /tmp:/tmp --name cloud-file-worker -d 
 }
 ```
 
+### Remove entire local directory
+```json
+{
+  "ops": "remove",
+  "args": {
+    "cloud": "local",
+    "dst": "/tmp/nat"
+  }
+}
+```
+
 ### Sync entire local directory to cloud
 ```json
 {
