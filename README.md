@@ -142,3 +142,15 @@ docker run --env-file cloud-worker.env -v /tmp:/tmp --name cloud-file-worker -d 
   ]
 }
 ```
+
+### Copy local files of source directory to target directory
+```json
+{
+  "ops": "copy",
+  "args": {
+    "cloud": "local",
+    "src": "/mnt/data/user_drive/5d8976c09f428c798c5fc3b0",
+    "dst": "/data/user_drive/5d8976c09f428c798c5fc3b0"
+  }
+}
+```
