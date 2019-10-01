@@ -270,7 +270,7 @@ function syncDirUp (args) {
 }
 
 function syncDirUpS3 ({ bucket, region, src, dst, remove, exclude }) {
-  let sync = `s3 sync ${src} s3://${bucket}/${dst} --no-follow-symlinks`
+  let sync = `s3 sync ${src} s3://${bucket}/${dst} --region ${region} --no-follow-symlinks`
   if (remove) {
     sync += ' --delete'
   }
@@ -302,7 +302,7 @@ function syncDirDown (args) {
 }
 
 function syncDirDownS3 ({ bucket, region, src, dst, remove, verbose }) {
-  let sync = `s3 sync s3://${bucket}/${src} ${dst}`
+  let sync = `s3 sync s3://${bucket}/${src} ${dst} --region ${region}`
   if (remove) {
     sync += ' --delete'
   }
